@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { CalledByInput } from "./CalledByInput"
 
 interface LeadTableProps {
   leads: Lead[]
@@ -39,7 +38,7 @@ interface LeadTableProps {
   calledByUsers: string[]
 }
 
-export function LeadTable({ leads, onUpdate, onDelete, calledByUsers }: LeadTableProps) {
+export function LeadTable({ leads, onUpdate, onDelete }: LeadTableProps) {
   const [editingLeadId, setEditingLeadId] = useState<string | null>(null)
   const [editedLeadData, setEditedLeadData] = useState<Partial<Lead> | null>(null)
 
@@ -199,11 +198,19 @@ export function LeadTable({ leads, onUpdate, onDelete, calledByUsers }: LeadTabl
                     />
                   </TableCell>
                   <TableCell>
-                    <CalledByInput
+                    <Select
                       value={editedLeadData.calledby || ""}
-                      onChange={(value) => handleFieldChange("calledby", value)}
-                      suggestions={calledByUsers}
-                    />
+                      onValueChange={(value) => handleFieldChange("calledby", value)}
+                    >
+                      <SelectTrigger className="h-8">
+                        <SelectValue placeholder="Select user" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Ian">Ian</SelectItem>
+                        <SelectItem value="Yhome">Yhome</SelectItem>
+                        <SelectItem value="Luisa">Luisa</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

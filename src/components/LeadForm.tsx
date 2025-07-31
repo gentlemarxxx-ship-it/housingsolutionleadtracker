@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/dialog"
 import { Plus } from "lucide-react"
 import { Lead } from "@/hooks/useLeads"
-import { CalledByInput } from "./CalledByInput"
 
 interface LeadFormProps {
   onSubmit: (lead: Omit<Lead, "id" | "created_at" | "updated_at">) => Promise<void>
@@ -28,7 +27,7 @@ interface LeadFormProps {
   title?: string
 }
 
-export function LeadForm({ onSubmit, calledByUsers, trigger, lead, title = "Add New Lead" }: LeadFormProps) {
+export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: LeadFormProps) {
   const [open, setOpen] = useState(false)
   const [formData, setFormData] = useState({
     firstname: lead?.firstname || "",
@@ -207,11 +206,19 @@ export function LeadForm({ onSubmit, calledByUsers, trigger, lead, title = "Add 
 
           <div>
             <Label htmlFor="calledby">Called By</Label>
-            <CalledByInput
+            <Select
               value={formData.calledby}
-              onChange={(value) => setFormData({...formData, calledby: value})}
-              suggestions={calledByUsers}
-            />
+              onValueChange={(value) => setFormData({...formData, calledby: value})}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select user" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Ian">Ian</SelectItem>
+                <SelectItem value="Yhome">Yhome</SelectItem>
+                <SelectItem value="Luisa">Luisa</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex justify-end space-x-2">

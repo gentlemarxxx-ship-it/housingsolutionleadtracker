@@ -11,14 +11,13 @@ import {
 } from "@/components/ui/select"
 import { Filter, X } from "lucide-react"
 import { LeadFilters as LeadFiltersType } from "@/hooks/useLeads"
-import { CalledByInput } from "./CalledByInput"
 
 interface LeadFiltersProps {
   onFilterChange: (filters: LeadFiltersType) => void
   calledByUsers: string[]
 }
 
-export function LeadFilters({ onFilterChange, calledByUsers }: LeadFiltersProps) {
+export function LeadFilters({ onFilterChange }: LeadFiltersProps) {
   const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState<LeadFiltersType>({})
 
@@ -143,11 +142,20 @@ export function LeadFilters({ onFilterChange, calledByUsers }: LeadFiltersProps)
           
           <div>
             <Label htmlFor="filter-calledby">Called By</Label>
-            <CalledByInput
+            <Select
               value={filters.calledby || ""}
-              onChange={(value) => handleFilterChange("calledby", value)}
-              suggestions={calledByUsers}
-            />
+              onValueChange={(value) => handleFilterChange("calledby", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All users" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All users</SelectItem>
+                <SelectItem value="Ian">Ian</SelectItem>
+                <SelectItem value="Yhome">Yhome</SelectItem>
+                <SelectItem value="Luisa">Luisa</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}
