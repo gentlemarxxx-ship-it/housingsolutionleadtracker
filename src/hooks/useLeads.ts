@@ -78,7 +78,7 @@ export function useLeads(remarkFilter?: string) {
 
   const addLead = async (leadData: Omit<Lead, "id" | "created_at" | "updated_at">) => {
     try {
-      const { data, error } = await supabase
+      const { data: newLead, error } = await supabase
         .from("leads")
         .insert([leadData])
         .select()
@@ -95,7 +95,10 @@ export function useLeads(remarkFilter?: string) {
         await fetchCalledByUsers()
       }
       
-      await fetchLeads()
+      if (!remarkFilter || newLead.remarks === remarkFilter) {
+        setLeads(prevLeads => [newLead, ...prevLeads]);
+      }
+
       toast({
         title: "Success",
         description: "Lead added successfully",
@@ -113,7 +116,7 @@ export function useLeads(remarkFilter?: string) {
 
   const updateLead = async (id: string, updates: Partial<Lead>) => {
     try {
-      const { data, error } = await supabase
+      const { data: updatedLead, error } = await supabase
         .from("leads")
         .update(updates)
         .eq("id", id)
@@ -131,7 +134,14 @@ export function useLeads(remarkFilter?: string) {
         await fetchCalledByUsers()
       }
       
-      await fetchLeads()
+      setLeads(prevLeads => {
+        if (remarkFilter && updatedLead.remarks !== remarkFilter) {
+          return prevLeads.filter(lead => lead.id !== id);
+        } else {
+          return prevLeads.map(lead => (lead.id === id ? updatedLead : lead));
+        }
+      });
+
       toast({
         title: "Success",
         description: "Lead updated successfully",
@@ -156,7 +166,7 @@ export function useLeads(remarkFilter?: string) {
       
       if (error) throw error
       
-      await fetchLeads()
+      setLeads(prevLeads => prevLeads.filter(lead => lead.id !== id));
       toast({
         title: "Success",
         description: "Lead deleted successfully",
