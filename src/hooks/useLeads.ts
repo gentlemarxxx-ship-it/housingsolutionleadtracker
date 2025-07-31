@@ -1,0 +1,200 @@
+import { useState, useEffect } from "react"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
+
+export type Lead = {
+  id: string
+  firstname: string
+  lastname: string
+  emailaddress?: string
+  workphone?: string
+  cellphone1?: string
+  homephone?: string
+  cellphone2?: string
+  source?: string
+  leadtype?: string
+  remarks: "Leads" | "Approved" | "Decline" | "No Answer"
+  lastcontact?: string
+  calledby?: string
+  created_at: string
+  updated_at: string
+}
+
+export type LeadFilters = {
+  firstname?: string
+  lastname?: string
+  workphone?: string
+  cellphone1?: string
+  homephone?: string
+  source?: string
+  remarks?: string
+  calledby?: string
+}
+
+export function useLeads(remarkFilter?: string) {
+  const [leads, setLeads] = useState<Lead[]>([])
+  const [loading, setLoading] = useState(true)
+  const [calledByUsers, setCalledByUsers] = useState<string[]>([])
+  const { toast } = useToast()
+
+  const fetchLeads = async () => {
+    try {
+      setLoading(true)
+      let query = supabase.from("leads").select("*").order("created_at", { ascending: false })
+      
+      if (remarkFilter && remarkFilter !== "") {
+        query = query.eq("remarks", remarkFilter as "Leads" | "Approved" | "Decline" | "No Answer")
+      }
+      
+      const { data, error } = await query
+      
+      if (error) throw error
+      setLeads(data || [])
+    } catch (error) {
+      console.error("Error fetching leads:", error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch leads",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchCalledByUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("called_by_users")
+        .select("name")
+        .order("name")
+      
+      if (error) throw error
+      setCalledByUsers(data?.map(user => user.name) || [])
+    } catch (error) {
+      console.error("Error fetching called by users:", error)
+    }
+  }
+
+  const addLead = async (leadData: Omit<Lead, "id" | "created_at" | "updated_at">) => {
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .insert([leadData])
+        .select()
+        .single()
+      
+      if (error) throw error
+      
+      // Add to called_by_users if new
+      if (leadData.calledby && !calledByUsers.includes(leadData.calledby)) {
+        await supabase
+          .from("called_by_users")
+          .insert([{ name: leadData.calledby }])
+          .select()
+        await fetchCalledByUsers()
+      }
+      
+      await fetchLeads()
+      toast({
+        title: "Success",
+        description: "Lead added successfully",
+      })
+    } catch (error) {
+      console.error("Error adding lead:", error)
+      toast({
+        title: "Error",
+        description: "Failed to add lead",
+        variant: "destructive",
+      })
+      throw error
+    }
+  }
+
+  const updateLead = async (id: string, updates: Partial<Lead>) => {
+    try {
+      const { data, error } = await supabase
+        .from("leads")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single()
+      
+      if (error) throw error
+      
+      // Add to called_by_users if new
+      if (updates.calledby && !calledByUsers.includes(updates.calledby)) {
+        await supabase
+          .from("called_by_users")
+          .insert([{ name: updates.calledby }])
+          .select()
+        await fetchCalledByUsers()
+      }
+      
+      await fetchLeads()
+      toast({
+        title: "Success",
+        description: "Lead updated successfully",
+      })
+    } catch (error) {
+      console.error("Error updating lead:", error)
+      toast({
+        title: "Error",
+        description: "Failed to update lead",
+        variant: "destructive",
+      })
+      throw error
+    }
+  }
+
+  const deleteLead = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .delete()
+        .eq("id", id)
+      
+      if (error) throw error
+      
+      await fetchLeads()
+      toast({
+        title: "Success",
+        description: "Lead deleted successfully",
+      })
+    } catch (error) {
+      console.error("Error deleting lead:", error)
+      toast({
+        title: "Error",
+        description: "Failed to delete lead",
+        variant: "destructive",
+      })
+      throw error
+    }
+  }
+
+  const filterLeads = (filters: LeadFilters) => {
+    return leads.filter(lead => {
+      return Object.entries(filters).every(([key, value]) => {
+        if (!value) return true
+        const leadValue = lead[key as keyof Lead]
+        return leadValue?.toString().toLowerCase().includes(value.toLowerCase())
+      })
+    })
+  }
+
+  useEffect(() => {
+    fetchLeads()
+    fetchCalledByUsers()
+  }, [remarkFilter])
+
+  return {
+    leads,
+    loading,
+    calledByUsers,
+    addLead,
+    updateLead,
+    deleteLead,
+    filterLeads,
+    refetch: fetchLeads,
+  }
+}
