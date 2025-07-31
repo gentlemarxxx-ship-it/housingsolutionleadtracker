@@ -20,12 +20,26 @@ interface ImportLeadsDialogProps {
   onImport: (leads: Omit<Lead, "id" | "created_at" | "updated_at">[]) => Promise<void>
 }
 
-const REQUIRED_COLUMNS = ["firstname", "lastname"]
-const OPTIONAL_COLUMNS = [
-  "emailaddress", "workphone", "cellphone1", "homephone", "cellphone2",
-  "source", "leadtype", "remarks", "lastcontact", "calledby"
-]
-const ALL_COLUMNS = [...REQUIRED_COLUMNS, ...OPTIONAL_COLUMNS]
+const HEADER_MAPPING: { [key: string]: keyof Omit<Lead, "id" | "created_at" | "updated_at"> } = {
+  "First Name": "firstname",
+  "Last Name": "lastname",
+  "Email": "emailaddress",
+  "Work Phone": "workphone",
+  "Cell Phone 1": "cellphone1",
+  "Home Phone": "homephone",
+  "Cell Phone 2": "cellphone2",
+  "Source": "source",
+  "Lead Type": "leadtype",
+  "Remarks": "remarks",
+  "Last Contact": "lastcontact",
+  "Called by": "calledby",
+};
+
+const USER_REQUIRED_COLUMNS = ["First Name", "Last Name"];
+const USER_OPTIONAL_COLUMNS = [
+  "Email", "Work Phone", "Cell Phone 1", "Home Phone", "Cell Phone 2",
+  "Source", "Lead Type", "Remarks", "Last Contact", "Called by"
+];
 
 export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
   const [open, setOpen] = useState(false)
@@ -56,7 +70,7 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
       skipEmptyLines: true,
       complete: async (results) => {
         const headers = results.meta.fields || []
-        const missingColumns = REQUIRED_COLUMNS.filter(col => !headers.includes(col))
+        const missingColumns = USER_REQUIRED_COLUMNS.filter(col => !headers.includes(col))
 
         if (missingColumns.length > 0) {
           toast({
@@ -70,19 +84,21 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
 
         const leadsToImport = results.data
           .map((row: any) => {
-            const lead: any = {}
-            for (const col of ALL_COLUMNS) {
-              if (row[col] !== undefined && row[col] !== null && row[col] !== '') {
-                lead[col] = row[col]
+            const lead: Partial<Omit<Lead, "id" | "created_at" | "updated_at">> = {}
+            for (const userHeader in HEADER_MAPPING) {
+              if (row[userHeader] !== undefined && row[userHeader] !== null && row[userHeader] !== '') {
+                const internalField = HEADER_MAPPING[userHeader as keyof typeof HEADER_MAPPING];
+                (lead as any)[internalField] = row[userHeader];
               }
             }
-            // Set default remarks if not provided
-            if (!lead.remarks) {
+            
+            if (!lead.remarks || !["Leads", "Approved", "Decline", "No Answer"].includes(lead.remarks)) {
               lead.remarks = "Leads"
             }
+
             return lead
           })
-          .filter(lead => lead.firstname && lead.lastname) // Ensure required fields are present
+          .filter(lead => lead.firstname && lead.lastname) as Omit<Lead, "id" | "created_at" | "updated_at">[]
 
         if (leadsToImport.length === 0) {
           toast({
@@ -128,7 +144,7 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
         <DialogHeader>
           <DialogTitle>Import Leads from CSV</DialogTitle>
           <DialogDescription>
-            Upload a CSV file to bulk-add leads. The file must contain 'firstname' and 'lastname' columns.
+            Upload a CSV file to bulk-add leads. The file must contain 'First Name' and 'Last Name' columns.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
@@ -138,8 +154,8 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
           </div>
           <div className="text-sm text-muted-foreground">
             <p className="font-medium">Expected Columns:</p>
-            <p><strong>Required:</strong> {REQUIRED_COLUMNS.join(", ")}</p>
-            <p><strong>Optional:</strong> {OPTIONAL_COLUMNS.join(", ")}</p>
+            <p><strong>Required:</strong> {USER_REQUIRED_COLUMNS.join(", ")}</p>
+            <p><strong>Optional:</strong> {USER_OPTIONAL_COLUMNS.join(", ")}</p>
           </div>
         </div>
         <DialogFooter>
