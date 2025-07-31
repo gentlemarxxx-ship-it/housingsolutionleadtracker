@@ -4,6 +4,7 @@ import { LeadTable } from "@/components/LeadTable"
 import { LeadForm } from "@/components/LeadForm"
 import { LeadFilters } from "@/components/LeadFilters"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ImportLeadsDialog } from "@/components/ImportLeadsDialog"
 
 interface LeadsPageProps {
   remarkFilter?: string
@@ -12,7 +13,7 @@ interface LeadsPageProps {
 }
 
 export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) {
-  const { leads, loading, calledByUsers, addLead, updateLead, deleteLead, filterLeads } = useLeads(remarkFilter)
+  const { leads, loading, calledByUsers, addLead, updateLead, deleteLead, filterLeads, batchAddLeads } = useLeads(remarkFilter)
   const [filters, setFilters] = useState<LeadFiltersType>({})
   
   const filteredLeads = filterLeads(filters)
@@ -33,10 +34,13 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          <LeadForm 
-            onSubmit={addLead} 
-            calledByUsers={calledByUsers}
-          />
+          <div className="flex items-center gap-2">
+            <ImportLeadsDialog onImport={batchAddLeads} />
+            <LeadForm 
+              onSubmit={addLead} 
+              calledByUsers={calledByUsers}
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <LeadFilters 

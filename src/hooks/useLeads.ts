@@ -182,6 +182,44 @@ export function useLeads(remarkFilter?: string) {
     })
   }
 
+  const batchAddLeads = async (newLeads: Omit<Lead, "id" | "created_at" | "updated_at">[]) => {
+    try {
+      // 1. Handle 'calledby' users
+      const newCalledByUsers = Array.from(new Set(newLeads.map(lead => lead.calledby).filter(Boolean))) as string[];
+      const existingUsers = new Set(calledByUsers);
+      const usersToAdd = newCalledByUsers.filter(user => !existingUsers.has(user));
+
+      if (usersToAdd.length > 0) {
+        const { error: usersError } = await supabase
+          .from("called_by_users")
+          .insert(usersToAdd.map(name => ({ name })));
+        if (usersError) throw usersError;
+        await fetchCalledByUsers();
+      }
+
+      // 2. Insert leads
+      const { error: leadsError } = await supabase
+        .from("leads")
+        .insert(newLeads);
+
+      if (leadsError) throw leadsError;
+
+      await fetchLeads();
+      toast({
+        title: "Success",
+        description: `${newLeads.length} leads imported successfully.`,
+      });
+    } catch (error) {
+      console.error("Error batch adding leads:", error);
+      toast({
+        title: "Error",
+        description: "Failed to import leads. Please check the file and try again.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   useEffect(() => {
     fetchLeads()
     fetchCalledByUsers()
@@ -195,6 +233,7 @@ export function useLeads(remarkFilter?: string) {
     updateLead,
     deleteLead,
     filterLeads,
+    batchAddLeads,
     refetch: fetchLeads,
   }
 }
