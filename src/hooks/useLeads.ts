@@ -21,12 +21,14 @@ export type Lead = {
 }
 
 export type LeadFilters = {
+  searchTerm?: string
   firstname?: string
   lastname?: string
   workphone?: string
   cellphone1?: string
   homephone?: string
   source?: string
+  leadtype?: string
   remarks?: string
   calledby?: string
 }
@@ -183,8 +185,33 @@ export function useLeads(remarkFilter?: string) {
   }
 
   const filterLeads = (filters: LeadFilters) => {
+    const { searchTerm, ...specificFilters } = filters
+
     return leads.filter(lead => {
-      return Object.entries(filters).every(([key, value]) => {
+      // 1. Apply general search term filter
+      if (searchTerm) {
+        const searchTermLower = searchTerm.toLowerCase()
+        const searchableFields = [
+          lead.firstname,
+          lead.lastname,
+          lead.emailaddress,
+          lead.workphone,
+          lead.cellphone1,
+          lead.homephone,
+          lead.cellphone2,
+          lead.source,
+          lead.leadtype,
+        ]
+        const isMatch = searchableFields.some(field =>
+          field?.toString().toLowerCase().includes(searchTermLower)
+        )
+        if (!isMatch) {
+          return false
+        }
+      }
+
+      // 2. Apply specific filters
+      return Object.entries(specificFilters).every(([key, value]) => {
         if (!value) return true
         const leadValue = lead[key as keyof Lead]
         return leadValue?.toString().toLowerCase().includes(value.toLowerCase())
