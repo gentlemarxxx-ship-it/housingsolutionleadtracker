@@ -26,6 +26,12 @@ export function LeadFilters({ onFilterChange, calledByUsers, leads }: LeadFilter
     onFilterChange(newFilters)
   }
 
+  const handleSelectChange = (key: keyof LeadFiltersType, value: string) => {
+    // If the "All" option is selected, we clear the filter by passing an empty string.
+    const actualValue = value === "_all_" ? "" : value
+    handleFilterChange(key, actualValue)
+  }
+
   const clearAll = () => {
     setFilters({})
     onFilterChange({})
@@ -48,32 +54,32 @@ export function LeadFilters({ onFilterChange, calledByUsers, leads }: LeadFilter
         />
       </div>
 
-      <Select value={filters.source || ""} onValueChange={(value) => handleFilterChange("source", value)}>
+      <Select value={filters.source || ""} onValueChange={(value) => handleSelectChange("source", value)}>
         <SelectTrigger className="w-full md:w-[180px]">
           <SelectValue placeholder="All Sources" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Sources</SelectItem>
+          <SelectItem value="_all_">All Sources</SelectItem>
           {sources.map(source => <SelectItem key={source} value={source}>{source}</SelectItem>)}
         </SelectContent>
       </Select>
 
-      <Select value={filters.leadtype || ""} onValueChange={(value) => handleFilterChange("leadtype", value)}>
+      <Select value={filters.leadtype || ""} onValueChange={(value) => handleSelectChange("leadtype", value)}>
         <SelectTrigger className="w-full md:w-[180px]">
           <SelectValue placeholder="All Lead Types" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Lead Types</SelectItem>
+          <SelectItem value="_all_">All Lead Types</SelectItem>
           {leadTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
         </SelectContent>
       </Select>
 
-      <Select value={filters.calledby || ""} onValueChange={(value) => handleFilterChange("calledby", value)}>
+      <Select value={filters.calledby || ""} onValueChange={(value) => handleSelectChange("calledby", value)}>
         <SelectTrigger className="w-full md:w-[180px]">
           <SelectValue placeholder="All Users" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Users</SelectItem>
+          <SelectItem value="_all_">All Users</SelectItem>
           {calledByUsers.map(user => <SelectItem key={user} value={user}>{user}</SelectItem>)}
         </SelectContent>
       </Select>
