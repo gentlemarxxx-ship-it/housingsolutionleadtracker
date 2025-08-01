@@ -46,6 +46,7 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
           <LeadFilters 
             onFilterChange={setFilters}
             calledByUsers={calledByUsers}
+            leads={leads}
           />
           
           <div className="flex items-center justify-between">
