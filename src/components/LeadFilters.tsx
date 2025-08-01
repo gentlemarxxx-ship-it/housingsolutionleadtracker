@@ -13,11 +13,10 @@ import { Lead, LeadFilters as LeadFiltersType } from "@/hooks/useLeads"
 
 interface LeadFiltersProps {
   onFilterChange: (filters: LeadFiltersType) => void
-  calledByUsers: string[]
   leads: Lead[]
 }
 
-export function LeadFilters({ onFilterChange, calledByUsers, leads }: LeadFiltersProps) {
+export function LeadFilters({ onFilterChange, leads }: LeadFiltersProps) {
   const [filters, setFilters] = useState<LeadFiltersType>({})
 
   const handleFilterChange = (key: keyof LeadFiltersType, value: string) => {
@@ -71,16 +70,6 @@ export function LeadFilters({ onFilterChange, calledByUsers, leads }: LeadFilter
         <SelectContent>
           <SelectItem value="_all_">All Lead Types</SelectItem>
           {leadTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
-        </SelectContent>
-      </Select>
-
-      <Select value={filters.calledby || ""} onValueChange={(value) => handleSelectChange("calledby", value)}>
-        <SelectTrigger className="w-full md:w-[180px]">
-          <SelectValue placeholder="All Users" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="_all_">All Users</SelectItem>
-          {calledByUsers.map(user => <SelectItem key={user} value={user}>{user}</SelectItem>)}
         </SelectContent>
       </Select>
 

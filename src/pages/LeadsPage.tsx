@@ -45,7 +45,6 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
         <CardContent className="space-y-4">
           <LeadFilters 
             onFilterChange={setFilters}
-            calledByUsers={calledByUsers}
             leads={leads}
           />
           

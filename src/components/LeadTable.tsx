@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Lead } from "@/hooks/useLeads"
+import { Lead, LeadRemark } from "@/hooks/useLeads"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Constants } from "@/integrations/supabase/types"
 
 interface LeadTableProps {
   leads: Lead[]
@@ -67,7 +68,7 @@ export function LeadTable({ leads, onUpdate, onDelete }: LeadTableProps) {
     }
   }
 
-  const getRemarksBadgeVariant = (remarks: string) => {
+  const getRemarksBadgeVariant = (remarks: string | null) => {
     switch (remarks) {
       case "Approved":
         return "default"
@@ -80,7 +81,7 @@ export function LeadTable({ leads, onUpdate, onDelete }: LeadTableProps) {
     }
   }
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = (dateString?: string | null) => {
     if (!dateString) return ""
     // Handles both 'YYYY-MM-DD' and full ISO strings
     const date = new Date(dateString)
@@ -175,17 +176,16 @@ export function LeadTable({ leads, onUpdate, onDelete }: LeadTableProps) {
                   </TableCell>
                   <TableCell>
                     <Select
-                      value={editedLeadData.remarks}
+                      value={editedLeadData.remarks || "Leads"}
                       onValueChange={(value) => handleFieldChange("remarks", value)}
                     >
                       <SelectTrigger className="h-8">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Leads">Leads</SelectItem>
-                        <SelectItem value="Approved">Approved</SelectItem>
-                        <SelectItem value="Decline">Decline</SelectItem>
-                        <SelectItem value="No Answer">No Answer</SelectItem>
+                        {Constants.public.Enums.lead_remarks.map(remark => (
+                          <SelectItem key={remark} value={remark}>{remark}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </TableCell>

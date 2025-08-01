@@ -1,24 +1,10 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import { Database } from "@/integrations/supabase/types"
 
-export type Lead = {
-  id: string
-  firstname: string
-  lastname: string
-  emailaddress?: string
-  workphone?: string
-  cellphone1?: string
-  homephone?: string
-  cellphone2?: string
-  source?: string
-  leadtype?: string
-  remarks: "Leads" | "Approved" | "Decline" | "No Answer"
-  lastcontact?: string
-  calledby?: string
-  created_at: string
-  updated_at: string
-}
+export type Lead = Database["public"]["Tables"]["leads"]["Row"]
+export type LeadRemark = Database["public"]["Enums"]["lead_remarks"]
 
 export type LeadFilters = {
   searchTerm?: string
@@ -45,7 +31,7 @@ export function useLeads(remarkFilter?: string) {
       let query = supabase.from("leads").select("*").order("created_at", { ascending: false })
       
       if (remarkFilter && remarkFilter !== "") {
-        query = query.eq("remarks", remarkFilter as "Leads" | "Approved" | "Decline" | "No Answer")
+        query = query.eq("remarks", remarkFilter as LeadRemark)
       }
       
       const { data, error } = await query

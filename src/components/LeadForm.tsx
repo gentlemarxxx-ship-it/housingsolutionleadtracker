@@ -17,7 +17,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus } from "lucide-react"
-import { Lead } from "@/hooks/useLeads"
+import { Lead, LeadRemark } from "@/hooks/useLeads"
+import { Constants } from "@/integrations/supabase/types"
 
 interface LeadFormProps {
   onSubmit: (lead: Omit<Lead, "id" | "created_at" | "updated_at">) => Promise<void>
@@ -39,7 +40,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
     cellphone2: lead?.cellphone2 || "",
     source: lead?.source || "",
     leadtype: lead?.leadtype || "",
-    remarks: lead?.remarks || "Leads" as const,
+    remarks: lead?.remarks || "Leads",
     lastcontact: lead?.lastcontact || "",
     calledby: lead?.calledby || "",
   })
@@ -111,7 +112,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
             <Input
               id="emailaddress"
               type="email"
-              value={formData.emailaddress}
+              value={formData.emailaddress || ""}
               onChange={(e) => setFormData({...formData, emailaddress: e.target.value})}
             />
           </div>
@@ -121,7 +122,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Label htmlFor="workphone">Work Phone</Label>
               <Input
                 id="workphone"
-                value={formData.workphone}
+                value={formData.workphone || ""}
                 onChange={(e) => setFormData({...formData, workphone: e.target.value})}
               />
             </div>
@@ -129,7 +130,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Label htmlFor="cellphone1">Cell Phone 1</Label>
               <Input
                 id="cellphone1"
-                value={formData.cellphone1}
+                value={formData.cellphone1 || ""}
                 onChange={(e) => setFormData({...formData, cellphone1: e.target.value})}
               />
             </div>
@@ -140,7 +141,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Label htmlFor="homephone">Home Phone</Label>
               <Input
                 id="homephone"
-                value={formData.homephone}
+                value={formData.homephone || ""}
                 onChange={(e) => setFormData({...formData, homephone: e.target.value})}
               />
             </div>
@@ -148,7 +149,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Label htmlFor="cellphone2">Cell Phone 2</Label>
               <Input
                 id="cellphone2"
-                value={formData.cellphone2}
+                value={formData.cellphone2 || ""}
                 onChange={(e) => setFormData({...formData, cellphone2: e.target.value})}
               />
             </div>
@@ -159,7 +160,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Label htmlFor="source">Source</Label>
               <Input
                 id="source"
-                value={formData.source}
+                value={formData.source || ""}
                 onChange={(e) => setFormData({...formData, source: e.target.value})}
               />
             </div>
@@ -167,7 +168,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Label htmlFor="leadtype">Lead Type</Label>
               <Input
                 id="leadtype"
-                value={formData.leadtype}
+                value={formData.leadtype || ""}
                 onChange={(e) => setFormData({...formData, leadtype: e.target.value})}
               />
             </div>
@@ -178,7 +179,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Label htmlFor="remarks">Remarks</Label>
               <Select
                 value={formData.remarks}
-                onValueChange={(value: "Leads" | "Approved" | "Decline" | "No Answer") =>
+                onValueChange={(value: LeadRemark) =>
                   setFormData({...formData, remarks: value})
                 }
               >
@@ -186,10 +187,9 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Leads">Leads</SelectItem>
-                  <SelectItem value="Approved">Approved</SelectItem>
-                  <SelectItem value="Decline">Decline</SelectItem>
-                  <SelectItem value="No Answer">No Answer</SelectItem>
+                  {Constants.public.Enums.lead_remarks.map(remark => (
+                    <SelectItem key={remark} value={remark}>{remark}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -198,7 +198,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
               <Input
                 id="lastcontact"
                 type="date"
-                value={formData.lastcontact}
+                value={formData.lastcontact || ""}
                 onChange={(e) => setFormData({...formData, lastcontact: e.target.value})}
               />
             </div>
@@ -207,7 +207,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
           <div>
             <Label htmlFor="calledby">Called By</Label>
             <Select
-              value={formData.calledby}
+              value={formData.calledby || ""}
               onValueChange={(value) => setFormData({...formData, calledby: value})}
             >
               <SelectTrigger>

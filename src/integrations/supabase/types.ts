@@ -94,7 +94,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      lead_remarks: "Leads" | "Approved" | "Decline" | "No Answer"
+      lead_remarks: "Leads" | "Approved" | "Decline" | "No Answer" | "Lead 1" | "Lead 2"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -222,7 +222,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      lead_remarks: ["Leads", "Approved", "Decline", "No Answer"],
+      lead_remarks: ["Leads", "Approved", "Decline", "No Answer", "Lead 1", "Lead 2"],
     },
   },
 } as const
