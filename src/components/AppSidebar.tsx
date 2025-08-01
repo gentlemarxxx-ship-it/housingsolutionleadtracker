@@ -12,12 +12,10 @@ import {
 } from "@/components/ui/sidebar"
 
 const items = [
-  { title: "Leads", url: "/", icon: Users, remarkFilter: "Leads" },
-  { title: "Approved", url: "/approved", icon: UserCheck, remarkFilter: "Approved" },
-  { title: "Decline", url: "/decline", icon: UserX, remarkFilter: "Decline" },
-  { title: "No Answer", url: "/no-answer", icon: HelpCircle, remarkFilter: "No Answer" },
-  { title: "Lead 1", url: "/lead1", icon: FolderKanban, remarkFilter: "Lead 1" },
-  { title: "Lead 2", url: "/lead2", icon: FolderKanban, remarkFilter: "Lead 2" },
+  { title: "Leads", url: "/", icon: FolderKanban },
+  { title: "Approved", url: "/approved", icon: UserCheck },
+  { title: "Decline", url: "/decline", icon: UserX },
+  { title: "No Answer", url: "/no-answer", icon: HelpCircle },
 ]
 
 export function AppSidebar() {

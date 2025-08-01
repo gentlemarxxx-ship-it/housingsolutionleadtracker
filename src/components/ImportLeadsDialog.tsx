@@ -15,6 +15,7 @@ import { Upload } from "lucide-react"
 import { Lead } from "@/hooks/useLeads"
 import Papa from "papaparse"
 import { useToast } from "@/hooks/use-toast"
+import { Constants } from "@/integrations/supabase/types"
 
 interface ImportLeadsDialogProps {
   onImport: (leads: Omit<Lead, "id" | "created_at" | "updated_at">[]) => Promise<void>
@@ -92,8 +93,8 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
               }
             }
             
-            if (!lead.remarks || !["Leads", "Approved", "Decline", "No Answer"].includes(lead.remarks)) {
-              lead.remarks = "Leads"
+            if (!lead.remarks || !(Constants.public.Enums.lead_remarks as readonly string[]).includes(lead.remarks)) {
+              lead.remarks = "Lead 1"
             }
 
             return lead

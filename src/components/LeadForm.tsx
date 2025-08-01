@@ -40,7 +40,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
     cellphone2: lead?.cellphone2 || "",
     source: lead?.source || "",
     leadtype: lead?.leadtype || "",
-    remarks: lead?.remarks || "Leads",
+    remarks: lead?.remarks || "Lead 1",
     lastcontact: lead?.lastcontact || "",
     calledby: lead?.calledby || "",
   })
@@ -61,7 +61,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead" }: Le
           cellphone2: "",
           source: "",
           leadtype: "",
-          remarks: "Leads",
+          remarks: "Lead 1",
           lastcontact: "",
           calledby: "",
         })
