@@ -37,6 +37,7 @@ export type Database = {
           calledby: string | null
           cellphone1: string | null
           cellphone2: string | null
+          city: string | null
           created_at: string
           emailaddress: string | null
           firstname: string
@@ -45,15 +46,20 @@ export type Database = {
           lastcontact: string | null
           lastname: string
           leadtype: string | null
+          link: string | null
+          property_address: string | null
           remarks: Database["public"]["Enums"]["lead_remarks"] | null
           source: string | null
+          state: string | null
           updated_at: string
           workphone: string | null
+          zip_code: string | null
         }
         Insert: {
           calledby?: string | null
           cellphone1?: string | null
           cellphone2?: string | null
+          city?: string | null
           created_at?: string
           emailaddress?: string | null
           firstname: string
@@ -62,15 +68,20 @@ export type Database = {
           lastcontact?: string | null
           lastname: string
           leadtype?: string | null
+          link?: string | null
+          property_address?: string | null
           remarks?: Database["public"]["Enums"]["lead_remarks"] | null
           source?: string | null
+          state?: string | null
           updated_at?: string
           workphone?: string | null
+          zip_code?: string | null
         }
         Update: {
           calledby?: string | null
           cellphone1?: string | null
           cellphone2?: string | null
+          city?: string | null
           created_at?: string
           emailaddress?: string | null
           firstname?: string
@@ -79,10 +90,14 @@ export type Database = {
           lastcontact?: string | null
           lastname?: string
           leadtype?: string | null
+          link?: string | null
+          property_address?: string | null
           remarks?: Database["public"]["Enums"]["lead_remarks"] | null
           source?: string | null
+          state?: string | null
           updated_at?: string
           workphone?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }

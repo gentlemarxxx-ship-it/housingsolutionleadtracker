@@ -12,41 +12,45 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { Upload } from "lucide-react"
-import { Lead } from "@/hooks/useLeads"
+import { Lead, LeadRemark } from "@/hooks/useLeads"
 import Papa from "papaparse"
 import { useToast } from "@/hooks/use-toast"
 import { Constants } from "@/integrations/supabase/types"
 
+type LeadImport = Omit<Lead, "id" | "created_at" | "updated_at">
+
 interface ImportLeadsDialogProps {
-  onImport: (leads: Omit<Lead, "id" | "created_at" | "updated_at">[]) => Promise<void>
+  onImport: (leads: LeadImport[]) => Promise<void>
+  remarkFilter?: string
 }
 
-const HEADER_MAPPING: { [key: string]: keyof Omit<Lead, "id" | "created_at" | "updated_at"> } = {
-  "First Name": "firstname",
-  "Last Name": "lastname",
-  "Email": "emailaddress",
-  "Work Phone": "workphone",
-  "Cell Phone 1": "cellphone1",
-  "Home Phone": "homephone",
-  "Cell Phone 2": "cellphone2",
-  "Source": "source",
-  "Lead Type": "leadtype",
-  "Remarks": "remarks",
-  "Last Contact": "lastcontact",
-  "Called by": "calledby",
+const HEADER_MAPPING_LEAD1: { [key: string]: keyof LeadImport } = {
+  "First Name": "firstname", "Last Name": "lastname", "Email": "emailaddress", "Work Phone": "workphone",
+  "Cell Phone 1": "cellphone1", "Home Phone": "homephone", "Cell Phone 2": "cellphone2", "Source": "source",
+  "Lead Type": "leadtype", "Remarks": "remarks", "Last Contact": "lastcontact", "Called by": "calledby",
 };
+const REQUIRED_COLUMNS_LEAD1 = ["First Name", "Last Name"];
+const OPTIONAL_COLUMNS_LEAD1 = Object.keys(HEADER_MAPPING_LEAD1).filter(h => !REQUIRED_COLUMNS_LEAD1.includes(h));
 
-const USER_REQUIRED_COLUMNS = ["First Name", "Last Name"];
-const USER_OPTIONAL_COLUMNS = [
-  "Email", "Work Phone", "Cell Phone 1", "Home Phone", "Cell Phone 2",
-  "Source", "Lead Type", "Remarks", "Last Contact", "Called by"
-];
+const HEADER_MAPPING_LEAD2: { [key: string]: keyof LeadImport | "fullname" } = {
+    "Last Contact": "lastcontact", "Called by": "calledby", "Full Name": "fullname", "Phone": "workphone",
+    "Email": "emailaddress", "Property Address": "property_address", "City": "city", "State": "state",
+    "ZIP Code": "zip_code", "Source": "source", "Lead Type": "leadtype", "Remarks": "remarks", "Link": "link",
+};
+const REQUIRED_COLUMNS_LEAD2 = ["Full Name"];
+const OPTIONAL_COLUMNS_LEAD2 = Object.keys(HEADER_MAPPING_LEAD2).filter(h => !REQUIRED_COLUMNS_LEAD2.includes(h));
 
-export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
+
+export function ImportLeadsDialog({ onImport, remarkFilter }: ImportLeadsDialogProps) {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [isImporting, setIsImporting] = useState(false)
   const { toast } = useToast()
+
+  const isLead2 = remarkFilter === 'Lead 2'
+  const HEADER_MAPPING = isLead2 ? HEADER_MAPPING_LEAD2 : HEADER_MAPPING_LEAD1;
+  const USER_REQUIRED_COLUMNS = isLead2 ? REQUIRED_COLUMNS_LEAD2 : REQUIRED_COLUMNS_LEAD1;
+  const USER_OPTIONAL_COLUMNS = isLead2 ? OPTIONAL_COLUMNS_LEAD2 : OPTIONAL_COLUMNS_LEAD1;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -56,11 +60,7 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
 
   const handleImport = () => {
     if (!file) {
-      toast({
-        title: "No file selected",
-        description: "Please select a CSV file to import.",
-        variant: "destructive",
-      })
+      toast({ title: "No file selected", description: "Please select a CSV file to import.", variant: "destructive" })
       return
     }
 
@@ -74,39 +74,45 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
         const missingColumns = USER_REQUIRED_COLUMNS.filter(col => !headers.includes(col))
 
         if (missingColumns.length > 0) {
-          toast({
-            title: "Invalid CSV format",
-            description: `Missing required columns: ${missingColumns.join(", ")}`,
-            variant: "destructive",
-          })
+          toast({ title: "Invalid CSV format", description: `Missing required columns: ${missingColumns.join(", ")}`, variant: "destructive" })
           setIsImporting(false)
           return
         }
 
         const leadsToImport = results.data
           .map((row: any) => {
-            const lead: Partial<Omit<Lead, "id" | "created_at" | "updated_at">> = {}
+            const lead: Partial<LeadImport> = {}
             for (const userHeader in HEADER_MAPPING) {
               if (row[userHeader] !== undefined && row[userHeader] !== null && row[userHeader] !== '') {
                 const internalField = HEADER_MAPPING[userHeader as keyof typeof HEADER_MAPPING];
-                (lead as any)[internalField] = row[userHeader];
+                if (internalField !== 'fullname') {
+                    (lead as any)[internalField] = row[userHeader];
+                }
               }
             }
             
+            if (isLead2 && row['Full Name']) {
+                const fullName = String(row['Full Name']).trim();
+                const spaceIndex = fullName.lastIndexOf(' ');
+                if (spaceIndex > 0 && spaceIndex < fullName.length -1) {
+                    lead.firstname = fullName.substring(0, spaceIndex);
+                    lead.lastname = fullName.substring(spaceIndex + 1);
+                } else {
+                    lead.firstname = fullName;
+                    lead.lastname = "";
+                }
+            }
+
             if (!lead.remarks || !(Constants.public.Enums.lead_remarks as readonly string[]).includes(lead.remarks)) {
-              lead.remarks = "Lead 1"
+              lead.remarks = (remarkFilter || "Lead 1") as LeadRemark
             }
 
             return lead
           })
-          .filter(lead => lead.firstname && lead.lastname) as Omit<Lead, "id" | "created_at" | "updated_at">[]
+          .filter(lead => lead.firstname) as LeadImport[]
 
         if (leadsToImport.length === 0) {
-          toast({
-            title: "No leads to import",
-            description: "The selected file is empty or does not contain valid lead data.",
-            variant: "destructive",
-          })
+          toast({ title: "No leads to import", description: "The selected file is empty or does not contain valid lead data.", variant: "destructive" })
           setIsImporting(false)
           return
         }
@@ -123,11 +129,7 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
       },
       error: (error) => {
         console.error("Error parsing CSV:", error)
-        toast({
-          title: "CSV Parsing Error",
-          description: "There was an error parsing your file. Please ensure it's a valid CSV.",
-          variant: "destructive",
-        })
+        toast({ title: "CSV Parsing Error", description: "There was an error parsing your file. Please ensure it's a valid CSV.", variant: "destructive" })
         setIsImporting(false)
       },
     })
@@ -145,7 +147,7 @@ export function ImportLeadsDialog({ onImport }: ImportLeadsDialogProps) {
         <DialogHeader>
           <DialogTitle>Import Leads from CSV</DialogTitle>
           <DialogDescription>
-            Upload a CSV file to bulk-add leads. The file must contain 'First Name' and 'Last Name' columns.
+            Upload a CSV file to bulk-add leads. The file must contain the required columns.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">

@@ -35,10 +35,11 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
             <CardDescription>{description}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <ImportLeadsDialog onImport={batchAddLeads} />
+            <ImportLeadsDialog onImport={batchAddLeads} remarkFilter={remarkFilter} />
             <LeadForm 
               onSubmit={addLead} 
               calledByUsers={calledByUsers}
+              remarkFilter={remarkFilter}
             />
           </div>
         </CardHeader>
@@ -59,6 +60,7 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
             onUpdate={updateLead}
             onDelete={deleteLead}
             calledByUsers={calledByUsers}
+            remarkFilter={remarkFilter}
           />
         </CardContent>
       </Card>
