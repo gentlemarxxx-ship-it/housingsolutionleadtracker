@@ -66,8 +66,18 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    const dataToSubmit = Object.fromEntries(
+      Object.entries(formData).map(([key, value]) => [key, value === "" ? null : value])
+    ) as Omit<Lead, "id" | "created_at" | "updated_at">;
+    
+    // Ensure required fields are not null
+    dataToSubmit.firstname = formData.firstname;
+    dataToSubmit.lastname = formData.lastname;
+    dataToSubmit.remarks = formData.remarks;
+
     try {
-      await onSubmit(formData)
+      await onSubmit(dataToSubmit)
       setOpen(false)
       if (!lead) {
         setFormData({
