@@ -2,7 +2,6 @@ import { useState } from "react"
 import { useLeads, LeadFilters as LeadFiltersType } from "@/hooks/useLeads"
 import { LeadTable } from "@/components/LeadTable"
 import { LeadForm } from "@/components/LeadForm"
-import { LeadFilters } from "@/components/LeadFilters"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ImportLeadsDialog } from "@/components/ImportLeadsDialog"
 import { Button } from "@/components/ui/button"
@@ -18,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { LeadFilters } from "@/components/LeadFilters"
 
 interface LeadsPageProps {
   remarkFilter?: string
@@ -26,7 +26,7 @@ interface LeadsPageProps {
 }
 
 export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) {
-  const { leads, loading, calledByUsers, addLead, deleteLead, filterLeads, batchAddLeads, batchDeleteLeads } = useLeads(remarkFilter)
+  const { leads, loading, addLead, deleteLead, filterLeads, batchAddLeads, batchDeleteLeads } = useLeads(remarkFilter)
   const [filters, setFilters] = useState<LeadFiltersType>({})
   const [selectedLeads, setSelectedLeads] = useState<string[]>([])
   
@@ -61,7 +61,6 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
             <ImportLeadsDialog onImport={batchAddLeads} remarkFilter={remarkFilter} />
             <LeadForm 
               onSubmit={addLead} 
-              calledByUsers={calledByUsers}
               remarkFilter={remarkFilter}
             />
           </div>

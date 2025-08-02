@@ -8,11 +8,12 @@ import { EditableField } from "@/components/EditableField"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { NotesSection } from "@/components/NotesSection"
+import { useUser } from "@/contexts/UserContext"
+import { useLeadNotes } from "@/hooks/useLeadNotes"
 
 const formatDate = (dateString?: string | null) => {
   if (!dateString) return null
   try {
-    // Handles both 'YYYY-MM-DD' and full ISO strings
     return new Date(dateString.split('T')[0]).toISOString().split('T')[0]
   } catch (e) {
     return null
@@ -22,18 +23,27 @@ const formatDate = (dateString?: string | null) => {
 export function LeadDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { currentUser } = useUser()
   const { lead, loading, updateLead } = useLeadDetail(id)
+  const notesHook = useLeadNotes(id)
 
   const handleUpdate = (field: string) => async (value: string) => {
     await updateLead({ [field]: value || null })
   }
 
+  const handleAddNote = async (content: string) => {
+    if (!currentUser) return;
+    await notesHook.addNote(content, currentUser);
+    await updateLead({ 
+      calledby: currentUser, 
+      lastcontact: new Date().toISOString().split('T')[0] 
+    });
+  };
+
   const getRemarkOptions = () => {
     if (!lead) return Constants.public.Enums.lead_remarks;
-
     const lead1Options = ['Lead 1', 'Approved', 'Decline', 'No Answer'];
     const lead2Options = ['Lead 2', 'Approved', 'Decline', 'No Answer'];
-
     const isLead2Type = lead.remarks === 'Lead 2' || 
                         (lead.remarks !== 'Lead 1' && (
                             lead.property_address || 
@@ -42,7 +52,6 @@ export function LeadDetailPage() {
                             lead.zip_code || 
                             lead.link
                         ));
-
     return isLead2Type ? lead2Options : lead1Options;
   };
 
@@ -114,7 +123,7 @@ export function LeadDetailPage() {
             </CardContent>
           </Card>
 
-          <NotesSection leadId={lead.id} />
+          <NotesSection leadId={lead.id} onAddNote={handleAddNote} />
         </div>
 
         <div className="space-y-6">

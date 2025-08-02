@@ -10,8 +10,24 @@ import Decline from "./pages/Decline";
 import NoAnswer from "./pages/NoAnswer";
 import NotFound from "./pages/NotFound";
 import { LeadDetailPage } from "./pages/LeadDetailPage";
+import { UserProvider } from "@/contexts/UserContext";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
+
+const AppRoutes = () => (
+  <Layout>
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/approved" element={<Approved />} />
+      <Route path="/decline" element={<Decline />} />
+      <Route path="/no-answer" element={<NoAnswer />} />
+      <Route path="/lead/:id" element={<LeadDetailPage />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  </Layout>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -19,17 +35,19 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
+        <UserProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/approved" element={<Approved />} />
-            <Route path="/decline" element={<Decline />} />
-            <Route path="/no-answer" element={<NoAnswer />} />
-            <Route path="/lead/:id" element={<LeadDetailPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <AppRoutes />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
-        </Layout>
+        </UserProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

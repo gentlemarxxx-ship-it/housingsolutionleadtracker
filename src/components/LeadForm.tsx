@@ -20,10 +20,10 @@ import { Plus } from "lucide-react"
 import { Lead, LeadRemark } from "@/hooks/useLeads"
 import { Constants } from "@/integrations/supabase/types"
 import { Textarea } from "./ui/textarea"
+import { useUser } from "@/contexts/UserContext"
 
 interface LeadFormProps {
   onSubmit: (lead: Omit<Lead, "id" | "created_at" | "updated_at">) => Promise<void>
-  calledByUsers: string[]
   trigger?: React.ReactNode
   lead?: Lead
   title?: string
@@ -32,6 +32,7 @@ interface LeadFormProps {
 
 export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", remarkFilter }: LeadFormProps) {
   const [open, setOpen] = useState(false)
+  const { currentUser } = useUser()
   const [formData, setFormData] = useState({
     firstname: "", lastname: "", emailaddress: "", workphone: "", cellphone1: "",
     homephone: "", cellphone2: "", source: "", leadtype: "",
@@ -71,10 +72,10 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
       Object.entries(formData).map(([key, value]) => [key, value === "" ? null : value])
     ) as Omit<Lead, "id" | "created_at" | "updated_at">;
     
-    // Ensure required fields are not null
     dataToSubmit.firstname = formData.firstname;
     dataToSubmit.lastname = formData.lastname;
     dataToSubmit.remarks = formData.remarks;
+    dataToSubmit.calledby = currentUser;
 
     try {
       await onSubmit(dataToSubmit)
@@ -211,18 +212,6 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
               <Label htmlFor="lastcontact">Last Contact</Label>
               <Input id="lastcontact" type="date" value={formData.lastcontact || ""} onChange={(e) => setFormData({...formData, lastcontact: e.target.value})} />
             </div>
-          </div>
-
-          <div>
-            <Label htmlFor="calledby">Called By</Label>
-            <Select value={formData.calledby || ""} onValueChange={(value) => setFormData({...formData, calledby: value})} >
-              <SelectTrigger><SelectValue placeholder="Select user" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Ian">Ian</SelectItem>
-                <SelectItem value="Yhome">Yhome</SelectItem>
-                <SelectItem value="Luisa">Luisa</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="flex justify-end space-x-2">

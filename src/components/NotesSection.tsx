@@ -7,14 +7,19 @@ import { useLeadNotes, LeadNote } from "@/hooks/useLeadNotes"
 import { Edit, Trash2, Save, X } from "lucide-react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Skeleton } from "./ui/skeleton"
+import { useUser } from "@/contexts/UserContext"
 
 interface NotesSectionProps {
   leadId: string
+  onAddNote: (content: string) => Promise<void>
 }
 
 const NoteItem = ({ note, onUpdate, onDelete }: { note: LeadNote, onUpdate: (id: string, content: string) => Promise<void>, onDelete: (id: string) => Promise<void> }) => {
+  const { currentUser } = useUser()
   const [isEditing, setIsEditing] = useState(false)
   const [content, setContent] = useState(note.content)
+
+  const canEdit = currentUser === note.user_name
 
   const handleUpdate = async () => {
     if (content.trim() === "") return
@@ -35,42 +40,46 @@ const NoteItem = ({ note, onUpdate, onDelete }: { note: LeadNote, onUpdate: (id:
           ) : (
             <p className="whitespace-pre-wrap">{note.content}</p>
           )}
-          <p className="text-xs text-muted-foreground mt-1">{formattedDate}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {note.user_name ? `${note.user_name} - ` : ''}{formattedDate}
+          </p>
         </div>
-        <div className="flex items-center ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-          {isEditing ? (
-            <>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleUpdate}><Save className="h-4 w-4" /></Button>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsEditing(false)}><X className="h-4 w-4" /></Button>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsEditing(true)}><Edit className="h-4 w-4" /></Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Note?</AlertDialogTitle>
-                    <AlertDialogDescription>This action cannot be undone. Are you sure you want to permanently delete this note?</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => onDelete(note.id)}>Delete</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </>
-          )}
-        </div>
+        {canEdit && (
+          <div className="flex items-center ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            {isEditing ? (
+              <>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleUpdate}><Save className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsEditing(false)}><X className="h-4 w-4" /></Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsEditing(true)}><Edit className="h-4 w-4" /></Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Note?</AlertDialogTitle>
+                      <AlertDialogDescription>This action cannot be undone. Are you sure you want to permanently delete this note?</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => onDelete(note.id)}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
-export function NotesSection({ leadId }: NotesSectionProps) {
-  const { notes, loading, addNote, updateNote, deleteNote } = useLeadNotes(leadId)
+export function NotesSection({ leadId, onAddNote }: NotesSectionProps) {
+  const { notes, loading, updateNote, deleteNote } = useLeadNotes(leadId)
   const [newNote, setNewNote] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
@@ -78,7 +87,7 @@ export function NotesSection({ leadId }: NotesSectionProps) {
     if (!newNote.trim()) return
     setIsSaving(true)
     try {
-      await addNote(newNote)
+      await onAddNote(newNote)
       setNewNote("")
     } finally {
       setIsSaving(false)

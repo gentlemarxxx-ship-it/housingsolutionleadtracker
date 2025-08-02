@@ -34,12 +34,12 @@ export function useLeadNotes(leadId: string | undefined) {
     fetchNotes()
   }, [fetchNotes])
 
-  const addNote = async (content: string) => {
+  const addNote = async (content: string, userName: string) => {
     if (!leadId) return
     try {
       const { data: newNote, error } = await supabase
         .from("lead_notes")
-        .insert({ lead_id: leadId, content })
+        .insert({ lead_id: leadId, content, user_name: userName })
         .select()
         .single()
       
