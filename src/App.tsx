@@ -9,6 +9,7 @@ import Approved from "./pages/Approved";
 import Decline from "./pages/Decline";
 import NoAnswer from "./pages/NoAnswer";
 import NotFound from "./pages/NotFound";
+import { LeadDetailPage } from "./pages/LeadDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/approved" element={<Approved />} />
             <Route path="/decline" element={<Decline />} />
             <Route path="/no-answer" element={<NoAnswer />} />
+            <Route path="/lead/:id" element={<LeadDetailPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -13,7 +13,7 @@ interface LeadsPageProps {
 }
 
 export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) {
-  const { leads, loading, calledByUsers, addLead, updateLead, deleteLead, filterLeads, batchAddLeads } = useLeads(remarkFilter)
+  const { leads, loading, calledByUsers, addLead, deleteLead, filterLeads, batchAddLeads } = useLeads(remarkFilter)
   const [filters, setFilters] = useState<LeadFiltersType>({})
   
   const filteredLeads = filterLeads(filters)
@@ -57,9 +57,7 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
           
           <LeadTable
             leads={filteredLeads}
-            onUpdate={updateLead}
             onDelete={deleteLead}
-            remarkFilter={remarkFilter}
           />
         </CardContent>
       </Card>

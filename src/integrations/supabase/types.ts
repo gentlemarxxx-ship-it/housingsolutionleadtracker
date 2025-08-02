@@ -237,7 +237,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      lead_remarks: ["Lead 1", "Lead 2", "Approved", "Decline", "No Answer"],
+      lead_remarks: ["Leads", "Lead 1", "Lead 2", "Approved", "Decline", "No Answer"],
     },
   },
 } as const
