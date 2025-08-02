@@ -59,7 +59,6 @@ export function LeadsPage({ remarkFilter, title, description }: LeadsPageProps) 
             leads={filteredLeads}
             onUpdate={updateLead}
             onDelete={deleteLead}
-            calledByUsers={calledByUsers}
             remarkFilter={remarkFilter}
           />
         </CardContent>
