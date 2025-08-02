@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react"
 import { EditableField } from "@/components/EditableField"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { NotesSection } from "@/components/NotesSection"
 
 const formatDate = (dateString?: string | null) => {
   if (!dateString) return null
@@ -27,15 +28,26 @@ export function LeadDetailPage() {
     await updateLead({ [field]: value || null })
   }
 
+  const handleAddNote = async (newNote: string) => {
+    const timestamp = new Date().toLocaleString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+    const noteEntry = `[${timestamp}] ${newNote}`;
+    const updatedNotes = lead?.notes ? `${lead.notes}\n${noteEntry}` : noteEntry;
+    await updateLead({ notes: updatedNotes });
+  };
+
   const getRemarkOptions = () => {
     if (!lead) return Constants.public.Enums.lead_remarks;
 
     const lead1Options = ['Lead 1', 'Approved', 'Decline', 'No Answer'];
     const lead2Options = ['Lead 2', 'Approved', 'Decline', 'No Answer'];
 
-    // Determine the "type" of the lead.
-    // A lead is type 2 if its remark is 'Lead 2', or if it has Lead 2-specific data
-    // and its remark isn't explicitly 'Lead 1'.
     const isLead2Type = lead.remarks === 'Lead 2' || 
                         (lead.remarks !== 'Lead 1' && (
                             lead.property_address || 
@@ -116,17 +128,7 @@ export function LeadDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader><CardTitle>Notes</CardTitle></CardHeader>
-            <CardContent>
-              <EditableField
-                value={lead.notes}
-                onSave={handleUpdate("notes")}
-                type="textarea"
-                placeholder="Add notes here..."
-              />
-            </CardContent>
-          </Card>
+          <NotesSection notes={lead.notes} onAddNote={handleAddNote} />
         </div>
 
         <div className="space-y-6">

@@ -77,6 +77,18 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
     dataToSubmit.lastname = formData.lastname;
     dataToSubmit.remarks = formData.remarks;
 
+    if (formData.notes) {
+      const timestamp = new Date().toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+      dataToSubmit.notes = `[${timestamp}] ${formData.notes}`;
+    }
+
     try {
       await onSubmit(dataToSubmit)
       setOpen(false)
