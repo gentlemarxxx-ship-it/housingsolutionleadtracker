@@ -1,4 +1,4 @@
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

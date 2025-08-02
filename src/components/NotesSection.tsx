@@ -7,7 +7,7 @@ import { useLeadNotes, LeadNote } from "@/hooks/useLeadNotes"
 import { Edit, Trash2, Save, X } from "lucide-react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Skeleton } from "./ui/skeleton"
-import { useUser } from "@/contexts/UserContext"
+import { useUser } from "@/context/UserContext"
 
 interface NotesSectionProps {
   leadId: string

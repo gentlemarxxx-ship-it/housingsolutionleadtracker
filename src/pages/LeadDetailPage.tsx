@@ -8,7 +8,7 @@ import { EditableField } from "@/components/EditableField"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { NotesSection } from "@/components/NotesSection"
-import { useUser } from "@/contexts/UserContext"
+import { useUser } from "@/context/UserContext"
 import { useLeadNotes } from "@/hooks/useLeadNotes"
 
 const formatDate = (dateString?: string | null) => {

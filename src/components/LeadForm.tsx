@@ -20,7 +20,7 @@ import { Plus } from "lucide-react"
 import { Lead, LeadRemark } from "@/hooks/useLeads"
 import { Constants } from "@/integrations/supabase/types"
 import { Textarea } from "./ui/textarea"
-import { useUser } from "@/contexts/UserContext"
+import { useUser } from "@/context/UserContext"
 
 interface LeadFormProps {
   onSubmit: (lead: Omit<Lead, "id" | "created_at" | "updated_at">) => Promise<void>

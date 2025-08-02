@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useUser } from "@/contexts/UserContext"
+import { useUser } from "@/context/UserContext"
 import { Button } from "./ui/button"
 
 const items = [

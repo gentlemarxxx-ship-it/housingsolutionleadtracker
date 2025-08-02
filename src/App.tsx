@@ -10,7 +10,7 @@ import Decline from "./pages/Decline";
 import NoAnswer from "./pages/NoAnswer";
 import NotFound from "./pages/NotFound";
 import { LeadDetailPage } from "./pages/LeadDetailPage";
-import { UserProvider } from "@/contexts/UserContext";
+import { UserProvider } from "@/context/UserContext";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 

@@ -1,4 +1,4 @@
-import { useUser } from '@/contexts/UserContext';
+import { useUser } from '@/context/UserContext';
 import { Navigate, useLocation } from 'react-router-dom';
 import { ReactNode } from 'react';
 
