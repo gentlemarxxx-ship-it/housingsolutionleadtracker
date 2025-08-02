@@ -1,9 +1,17 @@
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LeadsPage } from "./LeadsPage"
 
 const Index = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "lead1";
+
+  const handleTabChange = (value: string) => {
+    setSearchParams({ tab: value });
+  };
+
   return (
-    <Tabs defaultValue="lead1" className="w-full">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="lead1">Lead 1</TabsTrigger>
         <TabsTrigger value="lead2">Lead 2</TabsTrigger>
