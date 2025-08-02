@@ -85,6 +85,13 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
 
   const isLead2 = remarkFilter === 'Lead 2'
 
+  let remarkOptions: readonly LeadRemark[] = Constants.public.Enums.lead_remarks;
+  if (remarkFilter === 'Lead 1') {
+    remarkOptions = ['Lead 1', 'Approved', 'Decline', 'No Answer'];
+  } else if (remarkFilter === 'Lead 2') {
+    remarkOptions = ['Lead 2', 'Approved', 'Decline', 'No Answer'];
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -184,7 +191,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
               <Select value={formData.remarks} onValueChange={(value: LeadRemark) => setFormData({...formData, remarks: value})} >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {Constants.public.Enums.lead_remarks.map(remark => (
+                  {remarkOptions.map(remark => (
                     <SelectItem key={remark} value={remark}>{remark}</SelectItem>
                   ))}
                 </SelectContent>
