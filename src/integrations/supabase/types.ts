@@ -47,6 +47,7 @@ export type Database = {
           lastname: string
           leadtype: string | null
           link: string | null
+          notes: string | null
           property_address: string | null
           remarks: Database["public"]["Enums"]["lead_remarks"] | null
           source: string | null
@@ -69,6 +70,7 @@ export type Database = {
           lastname: string
           leadtype?: string | null
           link?: string | null
+          notes?: string | null
           property_address?: string | null
           remarks?: Database["public"]["Enums"]["lead_remarks"] | null
           source?: string | null
@@ -91,6 +93,7 @@ export type Database = {
           lastname?: string
           leadtype?: string | null
           link?: string | null
+          notes?: string | null
           property_address?: string | null
           remarks?: Database["public"]["Enums"]["lead_remarks"] | null
           source?: string | null
