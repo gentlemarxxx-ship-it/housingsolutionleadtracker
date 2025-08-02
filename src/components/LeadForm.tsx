@@ -37,7 +37,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
     homephone: "", cellphone2: "", source: "", leadtype: "",
     remarks: (remarkFilter || "Lead 1") as LeadRemark,
     lastcontact: "", calledby: "",
-    property_address: "", city: "", state: "", zip_code: "", link: "", notes: "",
+    property_address: "", city: "", state: "", zip_code: "", link: "",
   })
 
   useEffect(() => {
@@ -60,7 +60,6 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
         state: lead.state || "",
         zip_code: lead.zip_code || "",
         link: lead.link || "",
-        notes: lead.notes || "",
       })
     }
   }, [lead, remarkFilter])
@@ -77,18 +76,6 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
     dataToSubmit.lastname = formData.lastname;
     dataToSubmit.remarks = formData.remarks;
 
-    if (formData.notes) {
-      const timestamp = new Date().toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      });
-      dataToSubmit.notes = `[${timestamp}] ${formData.notes}`;
-    }
-
     try {
       await onSubmit(dataToSubmit)
       setOpen(false)
@@ -98,7 +85,7 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
           homephone: "", cellphone2: "", source: "", leadtype: "",
           remarks: (remarkFilter || "Lead 1") as LeadRemark,
           lastcontact: "", calledby: "",
-          property_address: "", city: "", state: "", zip_code: "", link: "", notes: "",
+          property_address: "", city: "", state: "", zip_code: "", link: "",
         })
       }
     } catch (error) {
@@ -236,11 +223,6 @@ export function LeadForm({ onSubmit, trigger, lead, title = "Add New Lead", rema
                 <SelectItem value="Luisa">Luisa</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea id="notes" value={formData.notes || ""} onChange={(e) => setFormData({...formData, notes: e.target.value})} placeholder="Add any relevant notes here..." />
           </div>
 
           <div className="flex justify-end space-x-2">

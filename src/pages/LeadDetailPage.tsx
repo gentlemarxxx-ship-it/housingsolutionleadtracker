@@ -28,20 +28,6 @@ export function LeadDetailPage() {
     await updateLead({ [field]: value || null })
   }
 
-  const handleAddNote = async (newNote: string) => {
-    const timestamp = new Date().toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-    const noteEntry = `[${timestamp}] ${newNote}`;
-    const updatedNotes = lead?.notes ? `${lead.notes}\n${noteEntry}` : noteEntry;
-    await updateLead({ notes: updatedNotes });
-  };
-
   const getRemarkOptions = () => {
     if (!lead) return Constants.public.Enums.lead_remarks;
 
@@ -128,7 +114,7 @@ export function LeadDetailPage() {
             </CardContent>
           </Card>
 
-          <NotesSection notes={lead.notes} onAddNote={handleAddNote} />
+          <NotesSection leadId={lead.id} />
         </div>
 
         <div className="space-y-6">
@@ -223,7 +209,11 @@ function LeadDetailSkeleton() {
           <Card>
             <CardHeader><Skeleton className="h-6 w-24" /></CardHeader>
             <CardContent>
-              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-60 w-full" />
+              <div className="mt-4 space-y-2">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-10 w-24" />
+              </div>
             </CardContent>
           </Card>
         </div>

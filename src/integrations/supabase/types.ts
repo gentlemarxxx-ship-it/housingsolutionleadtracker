@@ -32,6 +32,37 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_notes: {
+        Row: {
+          id: string
+          lead_id: string
+          content: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          content: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          content?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       leads: {
         Row: {
           calledby: string | null
@@ -47,7 +78,6 @@ export type Database = {
           lastname: string
           leadtype: string | null
           link: string | null
-          notes: string | null
           property_address: string | null
           remarks: Database["public"]["Enums"]["lead_remarks"] | null
           source: string | null
@@ -70,7 +100,6 @@ export type Database = {
           lastname: string
           leadtype?: string | null
           link?: string | null
-          notes?: string | null
           property_address?: string | null
           remarks?: Database["public"]["Enums"]["lead_remarks"] | null
           source?: string | null
@@ -93,7 +122,6 @@ export type Database = {
           lastname?: string
           leadtype?: string | null
           link?: string | null
-          notes?: string | null
           property_address?: string | null
           remarks?: Database["public"]["Enums"]["lead_remarks"] | null
           source?: string | null
