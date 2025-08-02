@@ -158,7 +158,30 @@ export function LeadDetailPage() {
                 value={lead.link}
                 onSave={handleUpdate("link")}
                 type="textarea"
-              />
+              >
+                {lead.link ? (
+                  <div className="flex flex-wrap gap-2">
+                    {lead.link.split(',').map(l => l.trim()).filter(Boolean).map((link, index) => {
+                      const href = /^(http|https)s?:\/\//.test(link) ? link : `https://${link}`;
+                      return (
+                        <a
+                          key={index}
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Badge variant="secondary" className="hover:bg-muted">
+                            {link}
+                          </Badge>
+                        </a>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground italic">Not set</span>
+                )}
+              </EditableField>
             </CardContent>
           </Card>
         </div>
