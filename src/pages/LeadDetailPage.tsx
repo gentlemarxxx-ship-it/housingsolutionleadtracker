@@ -27,6 +27,27 @@ export function LeadDetailPage() {
     await updateLead({ [field]: value || null })
   }
 
+  const getRemarkOptions = () => {
+    if (!lead) return Constants.public.Enums.lead_remarks;
+
+    const lead1Options = ['Lead 1', 'Approved', 'Decline', 'No Answer'];
+    const lead2Options = ['Lead 2', 'Approved', 'Decline', 'No Answer'];
+
+    // Determine the "type" of the lead.
+    // A lead is type 2 if its remark is 'Lead 2', or if it has Lead 2-specific data
+    // and its remark isn't explicitly 'Lead 1'.
+    const isLead2Type = lead.remarks === 'Lead 2' || 
+                        (lead.remarks !== 'Lead 1' && (
+                            lead.property_address || 
+                            lead.city || 
+                            lead.state || 
+                            lead.zip_code || 
+                            lead.link
+                        ));
+
+    return isLead2Type ? lead2Options : lead1Options;
+  };
+
   if (loading) {
     return <LeadDetailSkeleton />
   }
@@ -43,6 +64,7 @@ export function LeadDetailPage() {
     )
   }
 
+  const remarkOptions = getRemarkOptions();
   const fullName = `${lead.firstname || ""} ${lead.lastname || ""}`.trim()
 
   return (
@@ -58,7 +80,7 @@ export function LeadDetailPage() {
             value={lead.remarks}
             onSave={handleUpdate("remarks")}
             type="select"
-            selectOptions={Constants.public.Enums.lead_remarks}
+            selectOptions={remarkOptions}
             className="w-[180px]"
           >
             <Badge variant="outline" className="text-base px-3 py-1">{lead.remarks}</Badge>
