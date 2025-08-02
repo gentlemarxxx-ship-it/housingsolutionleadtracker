@@ -10,6 +10,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Lead } from "@/hooks/useLeads"
+import { Checkbox } from "./ui/checkbox"
 
 const formatDate = (dateString?: string | null) => {
   if (!dateString) return "N/A"
@@ -23,9 +24,11 @@ const formatDate = (dateString?: string | null) => {
 interface LeadTableRowProps {
   lead: Lead
   onDelete: (id: string) => Promise<void>
+  isSelected: boolean
+  onSelectToggle: (id: string) => void
 }
 
-export function LeadTableRow({ lead, onDelete }: LeadTableRowProps) {
+export function LeadTableRow({ lead, onDelete, isSelected, onSelectToggle }: LeadTableRowProps) {
   const navigate = useNavigate()
 
   const handleNavigate = () => {
@@ -38,7 +41,18 @@ export function LeadTableRow({ lead, onDelete }: LeadTableRowProps) {
   }
 
   return (
-    <TableRow onClick={handleNavigate} className="cursor-pointer hover:bg-muted/50">
+    <TableRow 
+      onClick={handleNavigate} 
+      className="cursor-pointer hover:bg-muted/50 data-[state=selected]:bg-muted"
+      data-state={isSelected ? "selected" : undefined}
+    >
+      <TableCell onClick={(e) => e.stopPropagation()} className="w-[50px]">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onSelectToggle(lead.id)}
+          aria-label={`Select lead ${lead.firstname} ${lead.lastname}`}
+        />
+      </TableCell>
       <TableCell className="font-medium">{lead.firstname} {lead.lastname}</TableCell>
       <TableCell>
         {lead.emailaddress && <div className="flex items-center gap-1 text-sm"><Mail className="h-3 w-3" />{lead.emailaddress}</div>}

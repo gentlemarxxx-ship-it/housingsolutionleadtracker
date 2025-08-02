@@ -170,6 +170,31 @@ export function useLeads(remarkFilter?: string) {
     }
   }
 
+  const batchDeleteLeads = async (ids: string[]) => {
+    try {
+      const { error } = await supabase
+        .from("leads")
+        .delete()
+        .in("id", ids);
+
+      if (error) throw error;
+
+      setLeads((prevLeads) => prevLeads.filter((lead) => !ids.includes(lead.id)));
+      toast({
+        title: "Success",
+        description: `${ids.length} leads deleted successfully.`,
+      });
+    } catch (error) {
+      console.error("Error batch deleting leads:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete selected leads.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   const filterLeads = (filters: LeadFilters) => {
     const { searchTerm, ...specificFilters } = filters
 
@@ -257,6 +282,7 @@ export function useLeads(remarkFilter?: string) {
     deleteLead,
     filterLeads,
     batchAddLeads,
+    batchDeleteLeads,
     refetch: fetchLeads,
   }
 }
