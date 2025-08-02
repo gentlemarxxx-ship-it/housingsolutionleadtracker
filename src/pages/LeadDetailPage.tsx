@@ -123,7 +123,13 @@ export function LeadDetailPage() {
             </CardContent>
           </Card>
 
-          <NotesSection leadId={lead.id} onAddNote={handleAddNote} />
+          <NotesSection
+            notes={notesHook.notes}
+            loading={notesHook.loading}
+            onAddNote={handleAddNote}
+            onUpdateNote={notesHook.updateNote}
+            onDeleteNote={notesHook.deleteNote}
+          />
         </div>
 
         <div className="space-y-6">

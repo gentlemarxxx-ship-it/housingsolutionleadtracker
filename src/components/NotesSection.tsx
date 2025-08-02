@@ -3,15 +3,18 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "./ui/scroll-area"
-import { useLeadNotes, LeadNote } from "@/hooks/useLeadNotes"
+import { LeadNote } from "@/hooks/useLeadNotes"
 import { Edit, Trash2, Save, X } from "lucide-react"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Skeleton } from "./ui/skeleton"
 import { useUser } from "@/context/UserContext"
 
 interface NotesSectionProps {
-  leadId: string
+  notes: LeadNote[]
+  loading: boolean
   onAddNote: (content: string) => Promise<void>
+  onUpdateNote: (id: string, content: string) => Promise<void>
+  onDeleteNote: (id: string) => Promise<void>
 }
 
 const NoteItem = ({ note, onUpdate, onDelete }: { note: LeadNote, onUpdate: (id: string, content: string) => Promise<void>, onDelete: (id: string) => Promise<void> }) => {
@@ -78,8 +81,7 @@ const NoteItem = ({ note, onUpdate, onDelete }: { note: LeadNote, onUpdate: (id:
   )
 }
 
-export function NotesSection({ leadId, onAddNote }: NotesSectionProps) {
-  const { notes, loading, updateNote, deleteNote } = useLeadNotes(leadId)
+export function NotesSection({ notes, loading, onAddNote, onUpdateNote, onDeleteNote }: NotesSectionProps) {
   const [newNote, setNewNote] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
@@ -109,7 +111,7 @@ export function NotesSection({ leadId, onAddNote }: NotesSectionProps) {
                 <Skeleton className="h-12 w-full" />
               </div>
             ) : notes.length > 0 ? (
-              notes.map(note => <NoteItem key={note.id} note={note} onUpdate={updateNote} onDelete={deleteNote} />)
+              notes.map(note => <NoteItem key={note.id} note={note} onUpdate={onUpdateNote} onDelete={onDeleteNote} />)
             ) : (
               <p className="text-sm text-muted-foreground italic text-center py-4">No notes yet.</p>
             )}
